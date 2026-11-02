@@ -1,0 +1,9 @@
+{"meta":{"source":"Données d'exemple fictives — remplacées par les données DVF réelles à la mise en ligne","debut":"","fin":"","maj":"","demo":true},"communes":{
+"69383":{"nom":"Lyon 3e Arrondissement","appartement":{"n":100,"p25":4000,"p50":4500,"p75":5000},"maison":{"n":10,"p25":5000,"p50":5500,"p75":6000}},
+"69290":{"nom":"Saint-Priest","maison":{"n":100,"p25":3000,"p50":3500,"p75":4000},"appartement":{"n":100,"p25":2500,"p50":3000,"p75":3500},"terrain":{"n":20,"p25":300,"p50":400,"p75":500}},
+"69259":{"nom":"Vénissieux","maison":{"n":100,"p25":3000,"p50":3500,"p75":4000},"appartement":{"n":100,"p25":2000,"p50":2500,"p75":3000},"terrain":{"n":10,"p25":300,"p50":400,"p75":500}},
+"69085":{"nom":"Feyzin","maison":{"n":50,"p25":3000,"p50":3500,"p75":4000},"appartement":{"n":30,"p25":2500,"p50":3000,"p75":3500},"terrain":{"n":8,"p25":300,"p50":400,"p75":500}},
+"69029":{"nom":"Bron","maison":{"n":60,"p25":3500,"p50":4000,"p75":4500},"appartement":{"n":100,"p25":2500,"p50":3000,"p75":3500}},
+"69266":{"nom":"Villeurbanne","appartement":{"n":100,"p25":3500,"p50":4000,"p75":4500},"maison":{"n":40,"p25":4000,"p50":4500,"p75":5000}},
+"38537":{"nom":"La Verpillière","maison":{"n":40,"p25":2500,"p50":3000,"p75":3500},"appartement":{"n":20,"p25":2000,"p50":2500,"p75":3000},"terrain":{"n":15,"p25":150,"p50":200,"p75":250}}
+}}
