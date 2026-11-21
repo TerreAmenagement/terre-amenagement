@@ -323,7 +323,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .band .section-head p { color: #cfe7da; }
 .owner-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .owner-col { background: rgba(255,255,255,.08); border-radius: var(--r-tile); padding: clamp(22px, 3vw, 34px); }
-.owner-col h3 { margin-bottom: 14px; font-size: 1.15rem; color: var(--gold); }
+.owner-col h3 { margin-bottom: 14px; font-size: 1.15rem; color: var(--gold-soft); }
 .owner-col ul { list-style: none; margin: 0; padding: 0; display: grid; }
 .owner-col li { padding: 13px 0; border-top: 1px solid rgba(255,255,255,.14); display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }
 .owner-col li:first-child { border-top: 0; }
@@ -382,7 +382,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .contact { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
 .coords { display: grid; gap: 30px; min-width: 0; }
 .coords dl { margin: 0; display: grid; gap: 18px; }
-.coords dl > div { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: center; }
+.coords dl > div { position: relative; min-height: 44px; padding-left: 58px; display: flex; flex-direction: column; justify-content: center; }
+.coords dt .ic { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
 .coords .ic { width: 44px; height: 44px; border-radius: 14px; background: var(--tile); display: grid; place-items: center; }
 .coords .ic svg { width: 22px; height: 22px; }
 .coords dt { font-size: 0.82rem; color: var(--muted); }
@@ -405,7 +406,7 @@ form.contact-form { display: grid; gap: 16px; background: var(--tile); border-ra
 .site-footer { background: var(--ink); color: var(--on-dark-muted); }
 .site-footer .wrap { padding-block: 64px 32px; display: grid; gap: 44px; }
 .foot-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); gap: 32px; }
-.foot-grid h4 { margin: 0 0 12px; color: var(--white); font-size: 0.95rem; font-weight: 600; }
+.foot-grid h3, .foot-grid h4 { margin: 0 0 12px; color: var(--white); font-size: 0.95rem; font-weight: 600; }
 .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .foot-grid a { text-decoration: none; }
 .foot-grid a:hover { color: var(--white); }
