@@ -7,30 +7,30 @@ on:
     - cron: "17 5 3 * *"   # le 3 de chaque mois : recalcul des prix DVF
   workflow_dispatch:
 
+# Par défaut, lecture seule ; seul le recalcul des prix peut écrire dans le dépôt.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: publication
   cancel-in-progress: false
 
 jobs:
-  publier:
+  prix:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-
-      - if: github.event_name != 'push'
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
-      - if: github.event_name != 'push'
-        run: pip install pandas==2.2.3
-      - if: github.event_name != 'push'
-        id: dvf
+      - run: pip install pandas==2.2.3
+      - id: dvf
         continue-on-error: true
         run: python scripts/build_dvf.py
-      - if: github.event_name != 'push' && steps.dvf.outcome == 'success'
+      - if: steps.dvf.outcome == 'success'
         name: Enregistrer les nouveaux prix
         run: |
           git config user.name "dvf-bot"
@@ -39,7 +39,18 @@ jobs:
           git diff --cached --quiet || git commit -m "Prix DVF : mise à jour"
           git push
 
-      - uses: cloudflare/wrangler-action@v3
+  publier:
+    needs: prix
+    # publie aussi lors d'un push (le travail « prix » est alors ignoré)
+    if: always() && (needs.prix.result == 'success' || needs.prix.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
+      - uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

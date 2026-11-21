@@ -4,7 +4,7 @@ Source : DGFiP, fichiers « DVF géolocalisées » publiés sur data.gouv.fr (Li
 Calcule, par commune et par type de bien, le nombre de ventes et les quartiles du prix au m²
 sur les 36 derniers mois disponibles. Aucune donnée individuelle n'est publiée sur le site.
 
-Lancé automatiquement par .github/workflows/dvf.yml (une fois par mois).
+Lancé automatiquement par .github/workflows/deploy.yml (le 3 de chaque mois).
 Usage local : python scripts/build_dvf.py
 """
 import io
