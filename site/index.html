@@ -98,6 +98,8 @@
             <button class="btn" type="submit">Envoyer ma demande <span class="arrow">→</span></button>
             <button class="link-back" type="button" id="q-back">← Modifier</button>
           </div>
+          <p class="quick-note">Demande transmise par e-mail via Web3Forms · <a href="mentions-legales.html#donnees">Vos données</a></p>
+          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <p class="quick-err" id="q-err" role="alert"></p>
           <div class="mail-fallback" id="q-fallback" hidden></div>
         </form>
@@ -640,7 +642,8 @@
             <label for="message">Votre bien ou votre projet</label>
             <textarea id="message" name="message" placeholder="Type de bien, surface du terrain, situation…"></textarea>
           </div>
-          <p class="legal-note">Le bouton ouvre votre messagerie avec votre demande pré-remplie. Les informations transmises sont utilisées par la SAS INITIUM (Terre Aménagement) pour répondre à votre demande. Vous disposez de droits sur vos données : voir la <a href="mentions-legales.html#donnees">politique de confidentialité</a>.</p>
+          <p class="legal-note">Votre demande est transmise par e-mail à la SAS INITIUM (Terre Aménagement) via le service Web3Forms, pour y répondre. Vous disposez de droits sur vos données : voir la <a href="mentions-legales.html#donnees">politique de confidentialité</a>.</p>
+          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <button class="btn" type="submit">Envoyer ma demande <span class="arrow">→</span></button>
           <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
           <div class="mail-fallback" id="c-fallback" hidden></div>
