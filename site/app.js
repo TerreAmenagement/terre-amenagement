@@ -4,20 +4,22 @@
   var quick = document.getElementById('quick-form');
 
   var ADR = 'contact@terre-amenagement.fr';
+  /* Clé d'envoi Web3Forms : publique par conception (elle ne permet que d'écrire à contact@). */
+  var W3F_KEY = 'a27295b0-e4bb-4724-bede-8a36331fd0d6';
+  var W3F_URL = 'https://api.web3forms.com/submit';
   var mailOk = function (v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); };
 
-  /* Ouvre la messagerie du visiteur et affiche toujours une solution de secours */
-  function envoyer(sujet, lignes, box) {
-    var corps = lignes.join('\n');
+  /* Secours : ouvre la messagerie du visiteur et propose le copier/coller */
+  function secours(sujet, corps, box, intro) {
     var href = 'mailto:' + ADR + '?subject=' + encodeURIComponent(sujet) + '&body=' + encodeURIComponent(corps);
     box.innerHTML = '';
     var p = document.createElement('p');
-    p.innerHTML = '<strong>Votre messagerie va s’ouvrir avec la demande pré-remplie.</strong> Si rien ne s’ouvre (messagerie en ligne, par exemple), copiez le message ci-dessous et envoyez-le à <b>' + ADR + '</b>.';
+    p.innerHTML = intro + ' Copiez le message ci-dessous et envoyez-le à <b>' + ADR + '</b>, ou ouvrez votre messagerie.';
     var ta = document.createElement('textarea'); ta.readOnly = true; ta.value = corps; ta.rows = 7; ta.setAttribute('aria-label', 'Message à envoyer');
     var row = document.createElement('div'); row.className = 'mf-actions';
     var b1 = document.createElement('button'); b1.type = 'button'; b1.className = 'btn'; b1.textContent = 'Copier le message';
     var b2 = document.createElement('button'); b2.type = 'button'; b2.className = 'btn outline'; b2.textContent = 'Copier l’adresse';
-    var b3 = document.createElement('a'); b3.className = 'btn outline'; b3.href = href; b3.textContent = 'Rouvrir ma messagerie';
+    var b3 = document.createElement('a'); b3.className = 'btn outline'; b3.href = href; b3.textContent = 'Ouvrir ma messagerie';
     function copier(txt, btn, ok) {
       var done = function () { btn.textContent = ok; };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function () { ta.select(); });
@@ -28,7 +30,35 @@
     row.appendChild(b1); row.appendChild(b2); row.appendChild(b3);
     box.appendChild(p); box.appendChild(ta); box.appendChild(row);
     box.hidden = false;
-    window.location.href = href;
+  }
+
+  /* Envoi direct vers contact@ (Web3Forms) ; en cas d'échec, solution de secours */
+  function envoyer(sujet, champs, f, box, ok) {
+    var corps = champs.map(function (c) { return c[0] ? c[0] + ' : ' + c[1] : '\n' + c[1]; }).join('\n');
+    var btn = f.querySelector('button[type=submit]');
+    var piege = f.querySelector('input[name=botcheck]');
+    if (piege && piege.checked) { ok(); return; }
+    var data = { access_key: W3F_KEY, subject: sujet, from_name: 'Site terre-amenagement.fr', botcheck: false };
+    champs.forEach(function (c) { data[c[0] || 'Message'] = c[1]; });
+    data.email = data['E-mail']; data.replyto = data['E-mail']; delete data['E-mail'];
+    box.hidden = true;
+    var lib = btn.innerHTML; btn.disabled = true; btn.textContent = 'Envoi en cours…';
+    var ctl = window.AbortController ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    fetch(W3F_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data),
+      signal: ctl ? ctl.signal : undefined
+    }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (j) {
+        if (!j || !j.success) throw new Error('refus');
+        f.reset(); ok();
+      })
+      .catch(function () {
+        secours(sujet, corps, box, '<strong>L’envoi n’a pas abouti.</strong>');
+      })
+      .then(function () { clearTimeout(t); btn.disabled = false; btn.innerHTML = lib; });
   }
 
   /* Tuile verte : étape 1 puis étape 2, sans quitter le haut de page */
@@ -56,14 +86,18 @@
     }
     err.textContent = '';
     envoyer('Demande d’étude · ' + (qData.commune || nom), [
-      'Profil : Propriétaire',
-      'Nom : ' + nom,
-      'E-mail : ' + email,
-      'Téléphone : ' + (q2.tel.value.trim() || '-'),
-      'Commune du bien : ' + (qData.commune || '-'),
-      'Type de bien : ' + qData.type,
-      'Surface du terrain : ' + (qData.surface ? qData.surface + ' m²' : '-')
-    ], document.getElementById('q-fallback'));
+      ['Profil', 'Propriétaire'],
+      ['Nom', nom],
+      ['E-mail', email],
+      ['Téléphone', q2.tel.value.trim() || '-'],
+      ['Commune du bien', qData.commune || '-'],
+      ['Type de bien', qData.type],
+      ['Surface du terrain', qData.surface ? qData.surface + ' m²' : '-']
+    ], q2, document.getElementById('q-fallback'), function () {
+      var fb = document.getElementById('q-fallback');
+      fb.innerHTML = '<p><strong>Merci, votre demande est bien envoyée.</strong> Nous revenons vers vous rapidement.</p>';
+      fb.hidden = false;
+    });
   });
 
   /* Formulaire de contact (bas de page) */
@@ -79,14 +113,16 @@
     }
     status.className = 'form-status'; status.textContent = '';
     envoyer('Demande d’étude · ' + (form.commune.value.trim() || nom), [
-      'Profil : ' + form.profil.value,
-      'Nom : ' + nom,
-      'E-mail : ' + email,
-      'Téléphone : ' + (form.tel.value.trim() || '-'),
-      'Commune du bien : ' + (form.commune.value.trim() || '-'),
-      '',
-      form.message.value.trim()
-    ], document.getElementById('c-fallback'));
+      ['Profil', form.profil.value],
+      ['Nom', nom],
+      ['E-mail', email],
+      ['Téléphone', form.tel.value.trim() || '-'],
+      ['Commune du bien', form.commune.value.trim() || '-'],
+      ['', form.message.value.trim() || '-']
+    ], form, document.getElementById('c-fallback'), function () {
+      status.className = 'form-status';
+      status.textContent = 'Merci, votre demande est bien envoyée. Nous revenons vers vous rapidement.';
+    });
   });
   /* Avant / Après */
   var stage = document.getElementById('stage');
