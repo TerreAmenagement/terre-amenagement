@@ -55,3 +55,13 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy site --project-name=terre-amenagement --branch=main --commit-dirty=true
+
+      # Signale la page d'accueil à Bing (et DuckDuckGo, Yahoo, Ecosia, Qwant, Yandex…) via IndexNow.
+      # La clé est publique par conception : elle est publiée à la racine du site.
+      - name: Signaler la mise à jour (IndexNow)
+        continue-on-error: true
+        run: |
+          sleep 20
+          curl -sS -o /dev/null -w "IndexNow : HTTP %{http_code}\n" -X POST "https://api.indexnow.org/IndexNow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            --data '{"host":"www.terre-amenagement.fr","key":"56d2d4e90d1a1eae135dc15c0eb87c4f","keyLocation":"https://www.terre-amenagement.fr/56d2d4e90d1a1eae135dc15c0eb87c4f.txt","urlList":["https://www.terre-amenagement.fr/"]}'
